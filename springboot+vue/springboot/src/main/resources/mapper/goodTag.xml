@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dao.TagDao">
+    <resultMap id="tags" type="com.po.Good_tag">
+        <id property="t_id" column="t_id"/>
+        <result property="tag_name" column="tag_name"/>
+        <collection property="goodList" ofType="com.po.Good">
+            <id property="g_id" column="g_id"/>
+            <result property="good_title" column="good_title"/>
+            <result property="price" column="price"/>
+            <result property="dateTime" column="dateTime"/>
+            <result property="type_id" column="type_id"/>
+            <result property="g_hot" column="g_hot"/>
+        </collection>
+    </resultMap>
+    <sql id="tagObj">
+        left join good_and_tag g on g.tag_id=e.t_id
+        left join good d on g.good_id=d.g_id
+    </sql>
+    <select id="findAllTag" resultMap="tags">
+        select * from good_tag e <include refid="tagObj"/>
+    </select>
+</mapper>

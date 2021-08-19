@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dao.GoodDaos">
+   <resultMap id="goods" type="com.po.Good">
+      <id property="g_id" column="g_id"/>
+      <result property="good_title" column="good_title"/>
+      <result property="price" column="price"/>
+      <result property="dateTime" column="dateTime"/>
+      <result property="type_id" column="type_id"/>
+       <result property="g_hot" column="g_hot"/>
+      <association property="good_type" javaType="com.po.Good_type">
+         <id property="p_id" column="p_id"/>
+         <result property="type_name" column="type_name"/>
+      </association>
+      <collection property="tagList" ofType="com.po.Good_tag">
+         <id property="t_id" column="t_id"/>
+         <result property="tag_name" column="tag_name"/>
+      </collection>
+      <collection property="good_commentList" ofType="com.po.good_Comment">
+         <id property="c_id" column="c_id"/>
+         <result property="cname" column="cname"/>
+         <result property="good_id" column="good_id"/>
+      </collection>
+   </resultMap>
+    <sql id="sqls">
+     LEFT JOIN good_type t ON t.p_id=d.type_id
+     LEFT JOIN good_comment c ON c.good_id=d.g_id
+     LEFT  JOIN good_and_tag g ON d.g_id=g.good_id
+     LEFT JOIN good_tag a ON a.t_id=g.tag_id
+    </sql>
+    <insert id="addGood"   >
+        <selectKey resultType="int" keyProperty="g_id" order="AFTER">
+            select LAST_INSERT_ID()
+        </selectKey>
+        insert into good (price,good_title,dateTime,type_id,g_hot) values
+        (#{goods.price},#{goods.good_title},#{goods.dateTime},#{good_type},#{goods.g_hot});
+    </insert>
+    <update id="upDate">
+        update good d <include refid="sqls"/> set price=#{price},good_title=#{good_title},g_hot=#{g_hot},
+        type_name=#{good_type.type_name} where d.g_id=#{g_id};
+        <if test="tagList != null and tagList.size()>0">
+            <foreach collection="tagList" item="tags">
+                    update good_tag a set a.tag_name=#{tags.tag_name} where a.t_id=#{tags.t_id};
+            </foreach>
+        </if>
+    </update>
+    <delete id="delete">
+        delete from good_comment  where good_id=#{id};
+        delete from good_and_tag  where good_id=#{id};
+        delete from good  where g_id=#{id};
+    </delete>
+    <select id="listGood" resultMap="goods">
+      SELECT * FROM good d <include refid="sqls"/> order by d.dateTime DESC LIMIT #{starts},#{size}
+   </select>
+   <select id="CountGood" resultType="java.lang.Integer">
+      select count(*) from good
+   </select>
+    <select id="ById" resultMap="goods">
+       SELECT * FROM good d
+       <include refid="sqls"/>
+        where d.g_id=#{id}
+    </select>
+    <select id="findAll" resultMap="goods">
+        SELECT * FROM good d
+        <include refid="sqls"/>
+    </select>
+</mapper>

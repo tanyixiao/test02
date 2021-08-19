@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dao.TypeDao">
+    <resultMap id="types" type="com.po.Good_type">
+        <id property="p_id" column="p_id"/>
+        <result property="type_name" column="type_name"/>
+        <collection property="goodLists" ofType="com.po.Good">
+            <id property="g_id" column="g_id"/>
+            <result property="good_title" column="good_title"/>
+            <result property="price" column="price"/>
+            <result property="dateTime" column="dateTime"/>
+            <result property="type_id" column="type_id"/>
+            <result property="g_hot" column="g_hot"/>
+        </collection>
+    </resultMap>
+    <sql id="typeObj">
+        left join good d on g.p_id=d.type_id
+    </sql>
+    <select id="findAllType" resultMap="types">
+        select * from good_type g <include refid="typeObj"/>
+    </select>
+</mapper>

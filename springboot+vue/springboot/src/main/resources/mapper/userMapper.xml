@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dao.userDao">
+   <resultMap id="users" type="com.po.User">
+      <id property="id" column="id"/>
+      <result property="name" column="name"/>
+      <result property="password" column="password"/>
+   </resultMap>
+   <insert id="add">
+      insert into users (name,password) values (#{name},#{password})
+   </insert>
+   <select id="userss" resultMap="users">
+      select * from users
+   </select>
+   <select id="Bypwd" resultMap="users">
+      select * from users where name=#{name} and password=#{password}
+   </select>
+</mapper>
